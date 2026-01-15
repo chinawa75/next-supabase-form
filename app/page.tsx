@@ -10,11 +10,21 @@ type AttendanceWithUser = {
 // ป้องกันการ prerender ตอน build ที่ต้องต่อฐานข้อมูล ให้รันแบบไดนามิก
 export const dynamic = "force-dynamic";
 
-export default async function HomePage() {
+export default async function HomePage({ searchParams }: { searchParams: Promise<{ q?: string }> }) {
+  const { q } = await searchParams;
+  const query = q || "";
   const todayDate = getTodayDate();
 
   const todayList: AttendanceWithUser[] = await prisma.attendances.findMany({
-    where: { date: todayDate },
+    where: {
+      date: todayDate,
+      user: {
+        OR: [
+          { name: { contains: query, mode: "insensitive" } },
+          { code: { contains: query, mode: "insensitive" } },
+        ],
+      },
+    },
     include: { user: true },
     orderBy: { check_in: "asc" },
   });
@@ -94,12 +104,30 @@ export default async function HomePage() {
           <div className="flex items-center justify-between gap-3">
             <div>
               <p className="text-xs uppercase tracking-wide text-slate-500">รายการ</p>
-              <h2 className="text-xl font-semibold text-slate-900">รายการเช็คชื่อวันนี้</h2>
+              <h2 className="text-xl font-semibold text-slate-900">
+                รายการเช็คชื่อวันนี้ <span className="text-slate-500 font-normal text-base ml-2">{formatThaiDate(new Date())}</span>
+              </h2>
             </div>
             <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700">
               ทั้งหมด {todayList.length} รายการ
             </span>
           </div>
+
+          <form className="relative">
+            <input
+              name="q"
+              defaultValue={query}
+              placeholder="ค้นหาชื่อ หรือ รหัส..."
+              className="w-full rounded-lg border border-slate-200 bg-slate-50/50 px-4 py-2 pl-4 pr-20 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition placeholder:text-slate-400"
+              autoComplete="off"
+            />
+            <button
+              type="submit"
+              className="absolute right-1.5 top-1.5 rounded-md bg-blue-600 px-3 py-1 text-xs font-medium text-white hover:bg-blue-500 shadow-sm transition-all active:scale-95"
+            >
+              ค้นหา
+            </button>
+          </form>
 
           {todayList.length === 0 ? (
             <div className="flex items-center gap-3 rounded-lg border border-dashed border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600">
@@ -154,6 +182,15 @@ function formatTime(date: Date) {
     minute: "2-digit",
     second: "2-digit",
     hour12: false,
+    timeZone: "Asia/Bangkok",
+  }).format(date);
+}
+
+function formatThaiDate(date: Date) {
+  return new Intl.DateTimeFormat("th-TH", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
     timeZone: "Asia/Bangkok",
   }).format(date);
 }
