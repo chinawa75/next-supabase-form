@@ -7,6 +7,9 @@ type AttendanceWithUser = {
   user: { code: string; name: string };
 };
 
+// ป้องกันการ prerender ตอน build ที่ต้องต่อฐานข้อมูล ให้รันแบบไดนามิก
+export const dynamic = "force-dynamic";
+
 export default async function HomePage() {
   const todayDate = getTodayDate();
 

@@ -45,7 +45,7 @@ export default function HeaderClock() {
             <div className="text-xl md:text-2xl font-bold text-slate-700 tracking-wide">
                 {dateString}
             </div>
-            <div className="text-4xl md:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600 font-mono tracking-wider tabular-nums mt-1 shadow-sm">
+            <div className="text-4xl md:text-6xl font-black text-slate-900 font-mono tracking-wider tabular-nums mt-1 shadow-sm">
                 {date.toLocaleTimeString("th-TH", { hour12: false })}
             </div>
         </div>
