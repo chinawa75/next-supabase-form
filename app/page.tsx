@@ -1,9 +1,11 @@
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import HeaderClock from "@/components/HeaderClock";
-import { Prisma } from "@prisma/client";
-
-type AttendanceWithUser = Prisma.attendancesGetPayload<{ include: { user: true } }>;
+type AttendanceWithUser = {
+  id: string;
+  check_in: Date;
+  user: { code: string; name: string };
+};
 
 export default async function HomePage() {
   const todayDate = getTodayDate();
