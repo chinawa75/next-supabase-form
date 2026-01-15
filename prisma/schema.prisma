@@ -1,0 +1,39 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  schemas  = ["public"]
+}
+
+model users {
+  id    String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  code  String @unique
+  name  String
+
+  attendances attendances[]
+
+  @@schema("public")
+}
+
+model attendances {
+  id       String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id  String   @db.Uuid
+  date     DateTime @db.Date
+  check_in DateTime @default(now())
+
+  user users @relation(fields: [user_id], references: [id])
+
+  @@unique([user_id, date])
+  @@schema("public")
+}
+
+model admins {
+  id       String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  username String   @unique
+  password String   // hash
+  created_at DateTime @default(now())
+
+  @@schema("public")
+}
