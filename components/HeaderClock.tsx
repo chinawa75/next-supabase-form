@@ -1,6 +1,9 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { Orbitron } from "next/font/google";
+
+const orbitron = Orbitron({ subsets: ["latin"], weight: ["400", "700"] });
 
 export default function HeaderClock() {
     const [mounted, setMounted] = useState(false);
@@ -38,15 +41,17 @@ export default function HeaderClock() {
     const monthName = months[date.getMonth()];
     const thaiYear = date.getFullYear() + 543;
 
-    const dateString = `${dayDate} ${monthName} ${thaiYear}`;
+    const dateString = `ประจำวันที่ ${dayDate} ${monthName} ${thaiYear}`;
 
     return (
-        <div className="flex flex-col items-center justify-center mb-6">
-            <div className="text-xl md:text-2xl font-bold text-slate-700 tracking-wide">
+        <div className="flex flex-col items-center justify-center mb-6 space-y-3">
+            <div className="text-xl md:text-2xl font-bold text-blue-900 tracking-wide drop-shadow-sm">
                 {dateString}
             </div>
-            <div className="text-4xl md:text-6xl font-black text-slate-900 font-mono tracking-wider tabular-nums mt-1 shadow-sm">
-                {date.toLocaleTimeString("th-TH", { hour12: false })}
+            <div className="bg-white border-2 border-blue-200 px-10 py-3 rounded-xl shadow-[0_0_15px_rgba(37,99,235,0.1)] hover:shadow-[0_0_20px_rgba(37,99,235,0.2)] transition-all ease-in-out duration-300">
+                <div className={`${orbitron.className} text-4xl md:text-6xl font-bold text-black tracking-wider tabular-nums`}>
+                    {date.toLocaleTimeString("th-TH", { hour12: false })}
+                </div>
             </div>
         </div>
     );
