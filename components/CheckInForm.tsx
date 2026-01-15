@@ -19,7 +19,7 @@ function SubmitButton() {
         <button
             type="submit"
             disabled={pending}
-            className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-blue-200 transition hover:from-blue-500 hover:to-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500 md:w-auto disabled:opacity-50 disabled:cursor-not-allowed"
+            className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-pink-700 to-rose-700 px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-pink-200 transition hover:from-pink-600 hover:to-rose-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pink-500 md:w-auto disabled:opacity-50 disabled:cursor-not-allowed"
         >
             {pending ? (
                 <>
@@ -66,20 +66,26 @@ export default function CheckInForm() {
         <form action={formAction} className="space-y-4">
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <div className="space-y-1">
-                    <label className="text-sm font-medium text-slate-700">ชื่อ-นามสกุล</label>
+                    <label className="text-sm font-bold text-black">ชื่อ-นามสกุล</label>
                     <input
                         name="name"
-                        className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-slate-900 shadow-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+                        className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-slate-900 shadow-sm outline-none transition focus:border-pink-400 focus:ring-2 focus:ring-pink-100"
                         required
                     />
                 </div>
                 <div className="space-y-1">
-                    <label className="text-sm font-medium text-slate-700">รหัสนักศึกษา</label>
+                    <label className="text-sm font-bold text-black">รหัสนักศึกษา</label>
                     <input
+                        type="text"
+                        inputMode="numeric"
                         name="code"
-                        placeholder="เช่น 69130000001"
-                        className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-slate-900 shadow-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+                        placeholder="เช่น 69130000001 (11 หลัก)"
+                        className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-slate-900 shadow-sm outline-none transition focus:border-pink-400 focus:ring-2 focus:ring-pink-100 placeholder:text-slate-400"
                         required
+                        minLength={11}
+                        maxLength={11}
+                        pattern="\d{11}"
+                        title="กรุณากรอกรหัสนักศึกษาเป็นตัวเลข 11 หลัก"
                     />
                 </div>
             </div>

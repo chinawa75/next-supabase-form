@@ -22,10 +22,11 @@ model attendances {
   user_id  String   @db.Uuid
   date     DateTime @db.Date
   check_in DateTime @default(now())
+  session  String   @default("morning") // 'morning' or 'afternoon'
 
   user users @relation(fields: [user_id], references: [id])
 
-  @@unique([user_id, date])
+  @@unique([user_id, date, session])
   @@schema("public")
 }
 

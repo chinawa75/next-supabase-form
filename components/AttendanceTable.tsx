@@ -25,10 +25,51 @@ const formatTime = (date: Date | string) => {
     }).format(new Date(date));
 };
 
-export default function AttendanceTable({ data }: { data: AttendanceWithUser[] }) {
+// Helper function for Thai date (client-side)
+const formatDate = (date: Date | string) => {
+    return new Intl.DateTimeFormat("th-TH", {
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+        timeZone: "Asia/Bangkok",
+    }).format(new Date(date));
+};
+
+const getCheckInStatus = (checkIn: Date, session: string) => {
+    const d = new Date(checkIn);
+    const h = d.getHours();
+    const m = d.getMinutes();
+
+    // Fallback session if empty (though Schema ensures default 'morning')
+    const currentSession = session || (h < 12 ? 'morning' : 'afternoon');
+
+    let isLate = false;
+    if (currentSession === 'morning') {
+        // Late after 8:30
+        if (h > 8 || (h === 8 && m > 30)) isLate = true;
+    } else {
+        // Late after 13:30
+        if (h > 13 || (h === 13 && m > 30)) isLate = true;
+    }
+
+    return isLate
+        ? { label: "สาย", className: "text-red-700 bg-red-50 border-red-200" }
+        : { label: "ปกติ", className: "text-green-700 bg-green-50 border-green-200" };
+};
+
+export default function AttendanceTable({
+    data,
+    showDateColumn = false,
+    showStatusColumn = true,
+}: {
+    data: AttendanceWithUser[],
+    showDateColumn?: boolean,
+    showStatusColumn?: boolean,
+}) {
     const [sorting, setSorting] = React.useState<SortingState>([]);
     const [globalFilter, setGlobalFilter] = React.useState("");
 
+    // Custom filter for Date objects vs string input YYYY-MM-DD
     const columns: ColumnDef<AttendanceWithUser>[] = [
         {
             accessorFn: (row) => row.user.code,
@@ -66,6 +107,26 @@ export default function AttendanceTable({ data }: { data: AttendanceWithUser[] }
             },
             cell: (info) => <span className="text-slate-900 font-medium">{info.getValue() as string}</span>,
         },
+        ...(showDateColumn ? [{
+            accessorFn: (row: AttendanceWithUser) => {
+                // Return YYYY-MM-DD string for easier filtering
+                return row.date ? new Date(row.date).toISOString().split('T')[0] : '';
+            },
+            id: "date",
+            header: ({ column }: { column: any }) => {
+                return (
+                    <div
+                        className="flex items-center gap-2 cursor-pointer select-none group text-slate-500 hover:text-slate-800 transition-colors"
+                        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                    >
+                        วันที่
+                        <ArrowUpDown className={`h-3 w-3 transition-opacity ${column.getIsSorted() ? "opacity-100" : "opacity-0 group-hover:opacity-50"}`} />
+                    </div>
+                );
+            },
+            cell: (info: any) => <span className="text-slate-600">{formatDate(info.row.original.date)}</span>,
+            filterFn: "equalsString" as const,
+        }] : []),
         {
             accessorKey: "check_in",
             header: ({ column }) => {
@@ -85,6 +146,18 @@ export default function AttendanceTable({ data }: { data: AttendanceWithUser[] }
                 </span>
             ),
         },
+        ...(showStatusColumn ? [{
+            id: "status",
+            header: "สถานะ",
+            cell: (info: any) => {
+                const { label, className } = getCheckInStatus(info.row.original.check_in, info.row.original.session);
+                return (
+                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${className}`}>
+                        {label}
+                    </span>
+                );
+            },
+        }] : []),
     ];
 
     const table = useReactTable({
@@ -111,16 +184,21 @@ export default function AttendanceTable({ data }: { data: AttendanceWithUser[] }
         <div className="space-y-4 w-full">
             {/* Toolbar */}
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-                <div className="relative w-full sm:w-72">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <Search className="h-4 w-4 text-slate-400" />
+                <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+                    <div className="relative w-full sm:w-72">
+                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <Search className="h-4 w-4 text-slate-400" />
+                        </div>
+                        <input
+                            value={globalFilter ?? ""}
+                            onChange={(e) => setGlobalFilter(e.target.value)}
+                            className="w-full pl-10 pr-4 py-2 border border-slate-200 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-500 transition-all placeholder:text-slate-400 shadow-sm"
+                            placeholder="ค้นหาชื่อ หรือ รหัส..."
+                        />
                     </div>
-                    <input
-                        value={globalFilter ?? ""}
-                        onChange={(e) => setGlobalFilter(e.target.value)}
-                        className="w-full pl-10 pr-4 py-2 border border-slate-200 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-500 transition-all placeholder:text-slate-400 shadow-sm"
-                        placeholder="ค้นหาชื่อ หรือ รหัส..."
-                    />
+
+                    {/* Date Filter Input - Only show if date column is enabled */}
+
                 </div>
                 <div className="text-sm text-slate-500 font-medium whitespace-nowrap">
                     แสดง {table.getFilteredRowModel().rows.length} จาก {data.length} รายการ

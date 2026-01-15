@@ -45,10 +45,10 @@ export default function HeaderClock() {
 
     return (
         <div className="flex flex-col items-center justify-center mb-6 space-y-3">
-            <div className="text-xl md:text-2xl font-bold text-blue-900 tracking-wide drop-shadow-sm">
+            <div className="text-xl md:text-2xl font-bold text-black tracking-wide drop-shadow-sm">
                 {dateString}
             </div>
-            <div className="bg-white border-2 border-blue-200 px-10 py-3 rounded-xl shadow-[0_0_15px_rgba(37,99,235,0.1)] hover:shadow-[0_0_20px_rgba(37,99,235,0.2)] transition-all ease-in-out duration-300">
+            <div className="bg-white border border-slate-200 px-10 py-3 rounded-xl shadow-sm transition-all ease-in-out duration-300">
                 <div className={`${orbitron.className} text-4xl md:text-6xl font-bold text-black tracking-wider tabular-nums`}>
                     {date.toLocaleTimeString("th-TH", { hour12: false })}
                 </div>
