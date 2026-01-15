@@ -114,7 +114,7 @@ export default async function HomePage() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
-                  {todayList.map((record: any, idx: number) => (
+                  {todayList.map((record: AttendanceWithUser, idx: number) => (
                     <tr key={record.id} className={idx % 2 === 0 ? "bg-white" : "bg-slate-50/70"}>
                       <td className="px-4 py-3 font-mono text-slate-800">{record.user.code}</td>
                       <td className="px-4 py-3 text-slate-900">{record.user.name}</td>
