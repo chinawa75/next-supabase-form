@@ -42,7 +42,7 @@ export default function HeaderClock() {
 
     return (
         <div className="flex flex-col items-center justify-center mb-6">
-            <div className="text-sm md:text-base font-medium text-slate-500 tracking-wide">
+            <div className="text-xl md:text-2xl font-bold text-slate-700 tracking-wide">
                 {dateString}
             </div>
             <div className="text-4xl md:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600 font-mono tracking-wider tabular-nums mt-1 shadow-sm">

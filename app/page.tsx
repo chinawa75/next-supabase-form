@@ -44,15 +44,7 @@ export default async function HomePage() {
       <main className="max-w-4xl mx-auto space-y-8 py-12 px-4 sm:px-6 lg:px-8">
         <section className="space-y-3 text-center">
           <HeaderClock />
-          <p className="inline-flex items-center rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700">
-            ระบบเช็คชื่ออัตโนมัติ
-          </p>
-          <h1 className="text-3xl font-bold tracking-tight text-slate-900">
-            ระบบเช็คชื่อประจำวัน
-          </h1>
-          <p className="text-sm text-slate-600">
-            กรอกชื่อและรหัส ระบบจะบันทึกวันที่วันนี้ให้อัตโนมัติ พร้อมแสดงรายการล่าสุด
-          </p>
+
         </section>
 
         <section className="rounded-2xl border border-slate-200 bg-white/70 shadow-lg shadow-slate-200/50 backdrop-blur p-6 space-y-4">
@@ -122,7 +114,7 @@ export default async function HomePage() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
-                  {todayList.map((record, idx) => (
+                  {todayList.map((record: any, idx: number) => (
                     <tr key={record.id} className={idx % 2 === 0 ? "bg-white" : "bg-slate-50/70"}>
                       <td className="px-4 py-3 font-mono text-slate-800">{record.user.code}</td>
                       <td className="px-4 py-3 text-slate-900">{record.user.name}</td>
