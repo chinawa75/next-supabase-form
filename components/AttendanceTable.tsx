@@ -80,7 +80,7 @@ export default function AttendanceTable({
                         className="flex items-center gap-2 cursor-pointer select-none group text-slate-500 hover:text-slate-800 transition-colors"
                         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                     >
-                        รหัส
+                        เลขที่
                         <ArrowUpDown className={`h-3 w-3 transition-opacity ${column.getIsSorted() ? "opacity-100" : "opacity-0 group-hover:opacity-50"}`} />
                     </div>
                 );
@@ -193,7 +193,7 @@ export default function AttendanceTable({
                             value={globalFilter ?? ""}
                             onChange={(e) => setGlobalFilter(e.target.value)}
                             className="w-full pl-10 pr-4 py-2 border border-slate-200 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-500 transition-all placeholder:text-slate-400 shadow-sm"
-                            placeholder="ค้นหาชื่อ หรือ รหัส..."
+                            placeholder="ค้นหาชื่อ หรือ เลขที่..."
                         />
                     </div>
 

@@ -74,18 +74,16 @@ export default function CheckInForm() {
                     />
                 </div>
                 <div className="space-y-1">
-                    <label className="text-sm font-bold text-black">รหัสนักศึกษา</label>
+                    <label className="text-sm font-bold text-black">เลขที่</label>
                     <input
                         type="text"
                         inputMode="numeric"
                         name="code"
-                        placeholder="เช่น 69130000001 (11 หลัก)"
+                        placeholder="กรอกเลขที่ของคุณ"
                         className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-slate-900 shadow-sm outline-none transition focus:border-pink-400 focus:ring-2 focus:ring-pink-100 placeholder:text-slate-400"
                         required
-                        minLength={11}
-                        maxLength={11}
-                        pattern="\d{11}"
-                        title="กรุณากรอกรหัสนักศึกษาเป็นตัวเลข 11 หลัก"
+                        pattern="\d+"
+                        title="กรุณากรอกเลขที่ให้ถูกต้อง"
                     />
                 </div>
             </div>

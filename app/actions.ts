@@ -14,14 +14,13 @@ export async function checkIn(prevState: CheckInState, formData: FormData): Prom
     const code = (formData.get("code") as string)?.trim();
 
     if (!name || !code) {
-        return { status: "error", message: "กรุณากรอกชื่อและรหัสให้ครบถ้วน", timestamp: Date.now() };
+        return { status: "error", message: "กรุณากรอกชื่อและเลขที่ให้ครบถ้วน", timestamp: Date.now() };
     }
 
-    // Validate Code: Must be exactly 11 digits
-    if (!/^\d{11}$/.test(code)) {
+    if (!/^\d+$/.test(code)) {
         return {
             status: "error",
-            message: "รหัสนักศึกษาต้องเป็นตัวเลข 11 หลักเท่านั้น",
+            message: "เลขที่ต้องเป็นตัวเลขเท่านั้น",
             timestamp: Date.now()
         };
     }
