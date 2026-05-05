@@ -22,8 +22,7 @@ export default async function HomePage() {
       <main className="max-w-4xl mx-auto space-y-8 py-12 px-4 sm:px-6 lg:px-8">
         <section className="space-y-3 text-center">
           <h1 className="text-lg md:text-xl font-bold text-pink-700 mb-4 max-w-2xl mx-auto leading-relaxed drop-shadow-md">
-            ลงทะเบียนเข้าร่วมอบรม หลักสูตรฝึกอบรมการพยาบาลเฉพาะทาง <br className="hidden sm:block" />
-            สาขาการพยาบาลเวชปฏิบัติครอบครัว รุ่นที่ 5
+            ลงทะเบียนเข้าร่วมอบรม หลักสูตรฝึกอบรมผู้บริหารการสาธารณสุขระดับต้น รุ่นที่ 35
           </h1>
           <HeaderClock />
         </section>
