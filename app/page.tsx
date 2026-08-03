@@ -3,6 +3,7 @@ import HeaderClock from "@/components/HeaderClock";
 import CheckInForm from "@/components/CheckInForm";
 import TodayAttendance from "@/components/TodayAttendance";
 import { AttendanceWithUser } from "@/lib/types";
+import Image from "next/image";
 // ป้องกันการ prerender ตอน build ที่ต้องต่อฐานข้อมูล ให้รันแบบไดนามิก
 export const dynamic = "force-dynamic";
 
@@ -21,6 +22,14 @@ export default async function HomePage() {
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 text-slate-900">
       <main className="max-w-4xl mx-auto space-y-8 py-12 px-4 sm:px-6 lg:px-8">
         <section className="space-y-3 text-center">
+          <Image
+            src="/bcnph.png"
+            alt="ตราวิทยาลัยพยาบาลบรมราชชนนี แพร่"
+            width={658}
+            height={617}
+            priority
+            className="mx-auto h-auto w-28 sm:w-36"
+          />
           <h1 className="text-lg md:text-xl font-bold text-pink-700 mb-4 max-w-2xl mx-auto leading-relaxed drop-shadow-md">
             ลงทะเบียนเข้าร่วมอบรม  <br className="hidden sm:block" />
             หลักสูตรฝึกอบรมผู้บริหารการสาธารณสุขระดับกลาง รุ่นที่ 39          </h1>
