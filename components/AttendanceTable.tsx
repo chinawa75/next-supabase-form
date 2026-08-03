@@ -11,7 +11,7 @@ import {
     ColumnDef,
     SortingState,
 } from "@tanstack/react-table";
-import { ArrowUpDown, ChevronLeft, ChevronRight, Search } from "lucide-react";
+import { ArrowUpDown, ChevronLeft, ChevronRight, Download, Search } from "lucide-react";
 import { AttendanceWithUser } from "@/lib/types";
 
 // Helper function for Thai time (client-side)
@@ -56,6 +56,16 @@ const getCheckInStatus = (checkIn: Date, session: string) => {
         ? { label: "สาย", className: "text-red-700 bg-red-50 border-red-200" }
         : { label: "ปกติ", className: "text-green-700 bg-green-50 border-green-200" };
 };
+
+const escapeXml = (value: string | number) => String(value)
+    .replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g, "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&apos;");
+
+const formatSession = (session: string) => session === "afternoon" ? "ภาคบ่าย" : "ภาคเช้า";
 
 export default function AttendanceTable({
     data,
@@ -180,6 +190,67 @@ export default function AttendanceTable({
         }
     });
 
+    const exportToExcel = () => {
+        const rows = table.getPrePaginationRowModel().rows;
+        const headings = ["ลำดับ", "เลขที่", "ชื่อ-นามสกุล", "วันที่", "เวลาเช็กอิน", "ช่วงเวลา", "สถานะ"];
+        const values = rows.map((row, index) => {
+            const attendance = row.original;
+            const status = getCheckInStatus(attendance.check_in, attendance.session).label;
+
+            return [
+                index + 1,
+                attendance.user.code,
+                attendance.user.name,
+                formatDate(attendance.date),
+                formatTime(attendance.check_in),
+                formatSession(attendance.session),
+                status,
+            ];
+        });
+
+        const worksheetRows = [headings, ...values]
+            .map((row, rowIndex) => `<Row>${row.map((cell) => (
+                `<Cell${rowIndex === 0 ? ' ss:StyleID="Header"' : ""}><Data ss:Type="${typeof cell === "number" ? "Number" : "String"}">${escapeXml(cell)}</Data></Cell>`
+            )).join("")}</Row>`)
+            .join("");
+
+        const workbook = `<?xml version="1.0" encoding="UTF-8"?>
+<?mso-application progid="Excel.Sheet"?>
+<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"
+ xmlns:o="urn:schemas-microsoft-com:office:office"
+ xmlns:x="urn:schemas-microsoft-com:office:excel"
+ xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet">
+ <DocumentProperties xmlns="urn:schemas-microsoft-com:office:office">
+  <Title>รายงานการเช็กชื่อ</Title><Created>${new Date().toISOString()}</Created>
+ </DocumentProperties>
+ <Styles>
+  <Style ss:ID="Default"><Alignment ss:Vertical="Center"/><Font ss:FontName="Tahoma" ss:Size="11"/></Style>
+  <Style ss:ID="Header"><Font ss:FontName="Tahoma" ss:Size="11" ss:Bold="1"/><Interior ss:Color="#DBEAFE" ss:Pattern="Solid"/></Style>
+ </Styles>
+ <Worksheet ss:Name="รายงานการเช็กชื่อ">
+  <Table>
+   <Column ss:Width="50"/><Column ss:Width="80"/><Column ss:Width="200"/><Column ss:Width="110"/><Column ss:Width="90"/><Column ss:Width="80"/><Column ss:Width="70"/>
+   ${worksheetRows}
+  </Table>
+  <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel"><FreezePanes/><FrozenNoSplit/><SplitHorizontal>1</SplitHorizontal><TopRowBottomPane>1</TopRowBottomPane></WorksheetOptions>
+ </Worksheet>
+</Workbook>`;
+
+        const dateForFilename = new Intl.DateTimeFormat("en-CA", {
+            timeZone: "Asia/Bangkok",
+        }).format(new Date());
+        const blob = new Blob([workbook], { type: "application/vnd.ms-excel;charset=utf-8" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+
+        link.href = url;
+        link.download = `attendance-${dateForFilename}.xls`;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        URL.revokeObjectURL(url);
+    };
+
     return (
         <div className="space-y-4 w-full">
             {/* Toolbar */}
@@ -200,8 +271,21 @@ export default function AttendanceTable({
                     {/* Date Filter Input - Only show if date column is enabled */}
 
                 </div>
-                <div className="text-sm text-slate-500 font-medium whitespace-nowrap">
-                    แสดง {table.getFilteredRowModel().rows.length} จาก {data.length} รายการ
+                <div className="flex w-full flex-col items-stretch gap-3 sm:w-auto sm:flex-row sm:items-center">
+                    <div className="text-center text-sm font-medium text-slate-500 whitespace-nowrap sm:text-left">
+                        แสดง {table.getFilteredRowModel().rows.length} จาก {data.length} รายการ
+                    </div>
+                    {showDateColumn && (
+                        <button
+                            type="button"
+                            onClick={exportToExcel}
+                            disabled={table.getPrePaginationRowModel().rows.length === 0}
+                            className="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-emerald-700 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-emerald-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600 disabled:cursor-not-allowed disabled:opacity-50"
+                        >
+                            <Download className="h-4 w-4" aria-hidden="true" />
+                            Export Excel
+                        </button>
+                    )}
                 </div>
             </div>
 
